@@ -197,7 +197,7 @@ contract MintableToken is StandardToken, Ownable {
   
   event MintFinished();
 
-  bool public released = false;
+  bool public finishMinting = false;
 
   address public saleAgent;
 
@@ -212,7 +212,7 @@ contract MintableToken is StandardToken, Ownable {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) returns (bool) {
-    require(msg.sender == saleAgent && !released);
+    require(msg.sender == saleAgent && !finishMinting);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -223,8 +223,9 @@ contract MintableToken is StandardToken, Ownable {
    * @dev Function to stop minting new tokens.
    * @return True if the operation was successful.
    */
-  function release() onlyOwner returns (bool) {
-    released = true;
+  function finishMinting() onlyOwner returns (bool) {
+    require(!finishMinting);
+    finishMinting = true;
     MintFinished();
     return true;
   }
@@ -481,7 +482,7 @@ contract CommonSale is StagedCrowdsale {
 
   function finishMinting() public whenNotPaused onlyOwner {
     if(nextSale == address(0)) {
-      token.release();
+      token.finishMinting();
     } else {
       token.setSaleAgent(nextSale);
     }
