@@ -197,11 +197,12 @@ contract MintableToken is StandardToken, Ownable {
   
   event MintFinished();
 
-  bool public mintingFinished = false;
+  bool public released = false;
 
-  modifier canMint() {
-    require(!mintingFinished);
-    _;
+  address public saleAgent;
+
+  function setSaleAgent(address newSaleAgnet) onlyOwner {
+    saleAgent = newSaleAgnet;
   }
 
   /**
@@ -210,7 +211,8 @@ contract MintableToken is StandardToken, Ownable {
    * @param _amount The amount of tokens to mint.
    * @return A boolean that indicates if the operation was successful.
    */
-  function mint(address _to, uint256 _amount) onlyOwner canMint returns (bool) {
+  function mint(address _to, uint256 _amount) returns (bool) {
+    require(msg.sender == saleAgent && !released);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
@@ -221,8 +223,8 @@ contract MintableToken is StandardToken, Ownable {
    * @dev Function to stop minting new tokens.
    * @return True if the operation was successful.
    */
-  function finishMinting() onlyOwner returns (bool) {
-    mintingFinished = true;
+  function release() onlyOwner returns (bool) {
+    released = true;
     MintFinished();
     return true;
   }
@@ -275,180 +277,176 @@ contract Pausable is Ownable {
   
 }
 
-
-contract *****Token is MintableToken {
+contract TestToken is MintableToken {	
     
-  string public constant name = *****;
+  string public constant name = "TST";
    
-  string public constant symbol = *****;
+  string public constant symbol = "Test token";
     
   uint32 public constant decimals = 18;
-
-  bool public transferAllowed = false;
-
-  modifier whenTransferAllowed() {
-    require(transferAllowed);
-    _;
-  }
-
-  function allowTransfer() onlyOwner {
-    transferAllowed = true;
-  }
-
-  function transfer(address _to, uint256 _value) whenTransferAllowed returns (bool) {
-    return super.transfer(_to, _value);
-  }
-
-  function transferFrom(address _from, address _to, uint256 _value) whenTransferAllowed returns (bool) {
-    return super.transferFrom(_from, _to, _value);
-  }
     
 }
 
 
-contract StagedCrowdsale is Ownable {
+contract StagedCrowdsale is Pausable {
 
   using SafeMath for uint;
 
-  struct Stage {
+  struct Milestone {
     uint period;
-    uint price;
+    uint bonus;
   }
 
   uint public start;
 
   uint public totalPeriod;
 
-  uint public totalInvested;
+  uint public invested;
 
   uint public hardCap;
  
-  Stage[] public stages;
+  Milestone[] public milestones;
 
-  function stagesCount() constant returns(uint) {
-    return stages.length;
+  function milestonesCount() constant returns(uint) {
+    return milestones.length;
   }
 
   function setStart(uint newStart) onlyOwner {
     start = newStart;
   }
 
-  function addStage(uint period, uint price) onlyOwner {
-    require(period>0 && price > 0);
-    stages.push(Stage(period, price));
+  function setHardcap(uint newHardcap) onlyOwner {
+    hardCap = newHardcap;
+  }
+
+  function addMilestone(uint period, uint bonus) onlyOwner {
+    require(period > 0);
+    milestones.push(Milestone(period, bonus));
     totalPeriod = totalPeriod.add(period);
   }
 
-  function removeStage(uint8 number) onlyOwner {
-    require(number >=0 && number < stages.length);
+  function removeMilestones(uint8 number) onlyOwner {
+    require(number < milestones.length);
+    Milestone storage milestone = milestones[number];
+    totalPeriod = totalPeriod.sub(milestone.period);
 
-    Stage storage stage = stages[number];
-    totalPeriod = totalPeriod.sub(stage.period);
+    delete milestones[number];
 
-    delete stages[number];
-
-    for (uint i = number; i < stages.length - 1; i++) {
-      stages[i] = stages[i+1];
+    for (uint i = number; i < milestones.length - 1; i++) {
+      milestones[i] = milestones[i+1];
     }
 
-    stages.length--;
+    milestones.length--;
   }
 
-  function changeStage(uint8 number, uint period, uint hardCap, uint price) onlyOwner {
-    require(number >= 0 &&number < stages.length);
+  function changeMilestone(uint8 number, uint period, uint bonus) onlyOwner {
+    require(number < milestones.length);
+    Milestone storage milestone = milestones[number];
 
-    Stage storage stage = stages[number];
+    totalPeriod = totalPeriod.sub(milestone.period);    
 
-    totalPeriod = totalPeriod.sub(stage.period);    
-
-    stage.period = period;
-    stage.price = price;
+    milestone.period = period;
+    milestone.bonus = bonus;
 
     totalPeriod = totalPeriod.add(period);    
   }
 
-  function insertStage(uint8 numberAfter, uint period, uint price) onlyOwner {
-    require(numberAfter < stages.length);
-
+  function insertMilestone(uint8 numberAfter, uint period, uint bonus) onlyOwner {
+    require(numberAfter < milestones.length);
 
     totalPeriod = totalPeriod.add(period);
 
-    stages.length++;
+    milestones.length++;
 
-    for (uint i = stages.length - 2; i > numberAfter; i--) {
-      stages[i + 1] = stages[i];
+    for (uint i = milestones.length - 2; i > numberAfter; i--) {
+      milestones[i + 1] = milestones[i];
     }
 
-    stages[numberAfter + 1] = Stage(period, price);
+    milestones[numberAfter + 1] = Milestone(period, bonus);
   }
 
-  function clearStages() onlyOwner {
-    for (uint i = 0; i < stages.length; i++) {
-      delete stages[i];
+  function clearMilestones() onlyOwner {
+    require(milestones.length > 0);
+    for (uint i = 0; i < milestones.length; i++) {
+      delete milestones[i];
     }
-    stages.length -= stages.length;
+    milestones.length -= milestones.length;
     totalPeriod = 0;
   }
 
   modifier saleIsOn() {
-    require(stages.length > 0 && now >= start && now < lastSaleDate());
+    require(milestones.length > 0 && now >= start && now < lastSaleDate());
     _;
   }
   
   modifier isUnderHardCap() {
-    require(totalInvested <= hardCap);
+    require(invested <= hardCap);
     _;
   }
   
   function lastSaleDate() constant returns(uint) {
-    require(stages.length > 0);
+    require(milestones.length > 0);
     return start + totalPeriod;
   }
 
-  function currentStage() saleIsOn constant returns(uint) {
+  function currentMilestone() saleIsOn constant returns(uint) {
     uint previousDate = start;
-    for(uint i=0; i < stages.length; i++) {
-      if(now >= previousDate && now < previousDate + stages[i].period) {
+    for(uint i=0; i < milestones.length; i++) {
+      if(now >= previousDate && now < previousDate + milestones[i].period) {
         return i;
       }
-      previousDate = previousDate.add(stages[i].period);
+      previousDate = previousDate.add(milestones[i].period);
     }
-    return 0;
+    revert();
   }
-
-  function updateStageWithInvested() internal {
-    uint stageIndex = currentStage();
-    totalInvested = totalInvested.add(msg.value);
-    Stage storage stage = stages[stageIndex];
-  }
-
 
 }
 
-contract Crowdsale is StagedCrowdsale, Pausable {
-    
+// FIX for freezed alien tokens, price and etc
+contract CommonSale is StagedCrowdsale {
+
   address public multisigWallet;
   
   address public foundersTokensWallet;
   
   address public bountyTokensWallet;
-  
-  uint public percentRate = 1000;
 
   uint public foundersPercent;
   
-  uint public bountyPercent;
+  uint public bountyTokensCount;
+ 
+  uint public price;
+
+  uint public percentRate = 100;
+
+  bool public bountyMinted = false;
+
+  CommonSale public nextSale;
   
-  FidcomToken public token = new FidcomToken();
+  MintableToken public token;
+
+  function CommonSale(address tokenAddress) {
+    token = MintableToken(tokenAddress);
+  }
+
+  function setNextSale(address newNextSale) onlyOwner {
+    nextSale = CommonSale(newNextSale);
+  }
+
+  function setPrice(uint newPrice) onlyOwner {
+    price = newPrice;
+  }
+
+  function setPercentRate(uint newPercentRate) onlyOwner {
+    percentRate = newPercentRate;
+  }
 
   function setFoundersPercent(uint newFoundersPercent) onlyOwner {
-    require(newFoundersPercent > 0 && newFoundersPercent < percentRate);
     foundersPercent = newFoundersPercent;
   }
   
-  function setBountyPercent(uint newBountyPercent) onlyOwner {
-    require(newBountyPercent > 0 && newBountyPercent < percentRate);
-    bountyPercent = newBountyPercent;
+  function setBountyTokensCount(uint newBountyTokensCount) onlyOwner {
+    bountyTokensCount = newBountyTokensCount;
   }
   
   function setMultisigWallet(address newMultisigWallet) onlyOwner {
@@ -463,28 +461,30 @@ contract Crowdsale is StagedCrowdsale, Pausable {
     bountyTokensWallet = newBountyTokensWallet;
   }
 
-  function finishMinting() public whenNotPaused onlyOwner {
-    uint issuedTokenSupply = token.totalSupply();
-    uint summaryTokensPercent = bountyPercent + foundersPercent;
-    uint summaryFoundersTokens = issuedTokenSupply.mul(summaryTokensPercent).div(percentRate - summaryTokensPercent);
-    uint totalSupply = summaryFoundersTokens + issuedTokenSupply;
-    uint foundersTokens = totalSupply.div(percentRate).mul(foundersPercent);
-    uint bountyTokens = totalSupply.div(percentRate).mul(bountyPercent);
-    token.mint(foundersTokensWallet, foundersTokens);
-    token.mint(bountyTokensWallet, bountyTokens);
-    token.finishMinting();
-    token.allowTransfer();
-  }
-
   function createTokens() whenNotPaused isUnderHardCap saleIsOn payable {
     require(msg.value > 0);
-    uint stageIndex = currentStage();
-    Stage storage stage = stages[stageIndex];
+    uint milestoneIndex = currentMilestone();
+    Milestone storage milestone = milestones[milestoneIndex];
     multisigWallet.transfer(msg.value);
-    uint price = stage.price;
+    invested = invested.add(msg.value);
     uint tokens = msg.value.div(price).mul(1 ether);
-    updateStageWithInvested();
-    token.mint(msg.sender, tokens);
+    uint bonusTokens = msg.value.div(percentRate).mul(milestone.bonus);
+    uint tokensWithBonus = tokens.add(bonusTokens);
+    token.mint(msg.sender, tokensWithBonus);
+    uint foundersTokens = tokens.div(percentRate).mul(foundersPercent);
+    token.mint(foundersTokensWallet, foundersTokens);
+    if(!bountyMinted) {
+      token.mint(bountyTokensWallet, bountyTokensCount);
+      bountyMinted = true;
+    }
+  }
+
+  function finishMinting() public whenNotPaused onlyOwner {
+    if(nextSale == address(0)) {
+      token.release();
+    } else {
+      token.setSaleAgent(nextSale);
+    }
   }
 
   function() external payable {
@@ -492,6 +492,58 @@ contract Crowdsale is StagedCrowdsale, Pausable {
   }
 
 }
+
+contract Configurator {
+
+  address owner = msg.sender;
+  address multisigWallet = 0x0;
+  address bountyTokensPreSaleWallet = 0x0;
+  address foundersTokensPreSaleWallet = 0x0; 
+  address bountyTokensMainSaleWallet = 0x0;
+  address foundersTokensMainSaleWallet = 0x0; 
+  uint bountyTokensPreSaleCount = 0x0;
+  uint foundersTokensPreSalePercent = 0x0; 
+  uint bountyTokensMainSaleCount = 0x0;
+  uint foundersTokensMainSalePercent = 0x0; 
+  uint preSaleStart = 0;
+  uint mainSaleStart = 0;
+  uint period = 1;
+  uint periodLast = period*2;
+
+  function Configurator() {
+    MintableToken token = new TestToken();
+
+    CommonSale preSale = new CommonSale(token);
+    preSale.addMilestone(period, 100);
+    preSale.addMilestone(period, 50);
+    preSale.addMilestone(periodLast, 40);
+    preSale.setBountyTokensWallet(bountyTokensPreSaleWallet);
+    preSale.setFoundersTokensWallet(foundersTokensPreSaleWallet);
+    preSale.setBountyTokensCount(bountyTokensPreSaleCount);
+    preSale.setFoundersPercent(foundersTokensPreSalePercent);
+    preSale.setStart(preSaleStart);
+
+    CommonSale mainSale = new CommonSale(token);
+    mainSale.setBountyTokensWallet(bountyTokensMainSaleWallet);
+    mainSale.setFoundersTokensWallet(foundersTokensMainSaleWallet);
+    mainSale.setBountyTokensCount(bountyTokensMainSaleCount);
+    mainSale.setFoundersPercent(foundersTokensMainSalePercent);
+    mainSale.addMilestone(period, 20);
+    mainSale.addMilestone(period, 10);
+    mainSale.addMilestone(periodLast, 0);
+    mainSale.setStart(mainSaleStart);
+
+    preSale.setNextSale(mainSale);
+
+    token.setSaleAgent(preSale);  
+
+    preSale.transferOwnership(owner);
+    mainSale.transferOwnership(owner);
+    token.transferOwnership(owner);
+  } 
+
+}
+
 
 
 
