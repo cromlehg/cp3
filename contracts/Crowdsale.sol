@@ -474,10 +474,12 @@ contract CommonSale is StagedCrowdsale {
     token.mint(msg.sender, tokensWithBonus);
     uint foundersTokens = tokens.div(percentRate).mul(foundersPercent);
     token.mint(foundersTokensWallet, foundersTokens);
-    if(!bountyMinted) {
-      token.mint(bountyTokensWallet, bountyTokensCount);
-      bountyMinted = true;
-    }
+  }
+
+  function finishMinting() public whenNotPaused onlyOwner {
+    required(!bountyMinted);
+    token.mint(bountyTokensWallet, bountyTokensCount);
+    bountyMinted = true;
   }
 
   function finishMinting() public whenNotPaused onlyOwner {
