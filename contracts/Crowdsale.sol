@@ -1,4 +1,4 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.16;
 
 /**
  * @title ERC20Basic
@@ -387,7 +387,7 @@ contract StagedCrowdsale is Pausable {
   
   function lastSaleDate() constant returns(uint) {
     require(milestones.length > 0);
-    return start + totalPeriod;
+    return start + totalPeriod * 1 days;
   }
 
   function currentMilestone() saleIsOn constant returns(uint) {
@@ -426,8 +426,8 @@ contract CommonSale is StagedCrowdsale {
   
   MintableToken public token;
 
-  function CommonSale(address tokenAddress) {
-    token = MintableToken(tokenAddress);
+  function setToken(address newToken) onlyOwner {
+    token = MintableToken(newToken);
   }
 
   function setNextSale(address newNextSale) onlyOwner {
@@ -496,28 +496,44 @@ contract CommonSale is StagedCrowdsale {
 
 }
 
-contract TestConfigurator {
+contract TestConfigurator is Ownable {
 
-  address owner = 0xa6f5138cd040ba04ec03c2763871402ae6cd6b45;
-  address multisigWalletPreSale = 0x11a8121afbbd83a88cf97a84a86da6e6fb640b9d;
-  address multisigWalletMainSale = 0x2213ced2655c3454438162c81933865ed6289696;
-  address bountyTokensPreSaleWallet = 0x89e42dedcdfe4e86222ec9c64a38f13e899ba8ce;
-  address foundersTokensPreSaleWallet = 0xb10c7598b9dfab99cd646ba385560912de95f590; 
-  address bountyTokensMainSaleWallet = 0x26450331453f4fe67e3557b54336062f133c716c;
-  address foundersTokensMainSaleWallet = 0x8d6dc4df99e18f07f1be6833a59c0cd48c5c1329; 
-  uint bountyTokensPreSaleCount = 110;
-  uint foundersTokensPreSalePercent = 25; 
-  uint bountyTokensMainSaleCount = 125;
-  uint foundersTokensMainSalePercent = 15; 
-  uint preSaleStart = 1504083600;
-  uint mainSaleStart = 1504602000;
-  uint period = 1;
-  uint periodLast = period*2;
+  address public owner = 0xA6F5138CD040Ba04ec03c2763871402aE6cd6B45;
+  address public multisigWalletPreSale = 0x11a8121AfBBd83a88CF97a84A86Da6E6Fb640b9d;
+  address public multisigWalletMainSale = 0x2213Ced2655c3454438162c81933865ed6289696;
+  address public bountyTokensPreSaleWallet = 0x89E42DeDcDFE4E86222ec9C64A38F13e899Ba8Ce;
+  address public foundersTokensPreSaleWallet = 0xB10c7598b9DfaB99cD646BA385560912dE95F590; 
+  address public bountyTokensMainSaleWallet = 0x26450331453f4fE67E3557b54336062f133c716C;
+  address public foundersTokensMainSaleWallet = 0x8D6dC4Df99e18f07F1be6833a59c0Cd48C5c1329; 
+  uint public bountyTokensPreSaleCount = 110;
+  uint public foundersTokensPreSalePercent = 25; 
+  uint public bountyTokensMainSaleCount = 125;
+  uint public foundersTokensMainSalePercent = 15; 
+  uint public preSaleStart = 1504083600;
+  uint public mainSaleStart = 1504602000;
+  uint public period = 1;
+  uint public periodLast = period*2;
+  uint public preSalePrice = 1000000000000;
+  uint public mainSalePrice = 2000000000000;
 
-  function Configurator() {
-    MintableToken token = new XRRTestToken();
+  MintableToken public token;
 
-    CommonSale preSale = new CommonSale(token);
+  CommonSale public preSale;
+  
+  CommonSale public mainSale;
+
+  function deploy() onlyOwner {
+      
+    token = new XRRTestToken();
+
+    preSale = new CommonSale();
+  
+    mainSale = new CommonSale();
+
+    preSale.setToken(token);
+
+    mainSale.setToken(token);
+      
     preSale.addMilestone(period, 100);
     preSale.addMilestone(period, 50);
     preSale.addMilestone(periodLast, 40);
@@ -527,8 +543,8 @@ contract TestConfigurator {
     preSale.setBountyTokensCount(bountyTokensPreSaleCount);
     preSale.setFoundersPercent(foundersTokensPreSalePercent);
     preSale.setStart(preSaleStart);
+    preSale.setPrice(preSalePrice);
 
-    CommonSale mainSale = new CommonSale(token);
     mainSale.setMultisigWallet(multisigWalletMainSale);
     mainSale.setBountyTokensWallet(bountyTokensMainSaleWallet);
     mainSale.setFoundersTokensWallet(foundersTokensMainSaleWallet);
@@ -538,6 +554,7 @@ contract TestConfigurator {
     mainSale.addMilestone(period, 10);
     mainSale.addMilestone(periodLast, 0);
     mainSale.setStart(mainSaleStart);
+    mainSale.setPrice(mainSalePrice);
 
     preSale.setNextSale(mainSale);
 
@@ -546,7 +563,9 @@ contract TestConfigurator {
     preSale.transferOwnership(owner);
     mainSale.transferOwnership(owner);
     token.transferOwnership(owner);
-  } 
+
+  }
+
 
 }
 
