@@ -278,11 +278,11 @@ contract Pausable is Ownable {
   
 }
 
-contract TestToken is MintableToken {	
+contract XRRTestToken is MintableToken {	
     
-  string public constant name = "TST";
+  string public constant name = "XRRT";
    
-  string public constant symbol = "Test token";
+  string public constant symbol = "XRRT Test token";
     
   uint32 public constant decimals = 18;
     
@@ -476,8 +476,8 @@ contract CommonSale is StagedCrowdsale {
     token.mint(foundersTokensWallet, foundersTokens);
   }
 
-  function finishMinting() public whenNotPaused onlyOwner {
-    required(!bountyMinted);
+  function mintBounty() public whenNotPaused onlyOwner {
+    require(!bountyMinted);
     token.mint(bountyTokensWallet, bountyTokensCount);
     bountyMinted = true;
   }
@@ -496,30 +496,32 @@ contract CommonSale is StagedCrowdsale {
 
 }
 
-contract Configurator {
+contract TestConfigurator {
 
-  address owner = msg.sender;
-  address multisigWallet = 0x0;
-  address bountyTokensPreSaleWallet = 0x0;
-  address foundersTokensPreSaleWallet = 0x0; 
-  address bountyTokensMainSaleWallet = 0x0;
-  address foundersTokensMainSaleWallet = 0x0; 
-  uint bountyTokensPreSaleCount = 0x0;
-  uint foundersTokensPreSalePercent = 0x0; 
-  uint bountyTokensMainSaleCount = 0x0;
-  uint foundersTokensMainSalePercent = 0x0; 
-  uint preSaleStart = 0;
-  uint mainSaleStart = 0;
+  address owner = 0xa6f5138cd040ba04ec03c2763871402ae6cd6b45;
+  address multisigWalletPreSale = 0x11a8121afbbd83a88cf97a84a86da6e6fb640b9d;
+  address multisigWalletMainSale = 0x2213ced2655c3454438162c81933865ed6289696;
+  address bountyTokensPreSaleWallet = 0x89e42dedcdfe4e86222ec9c64a38f13e899ba8ce;
+  address foundersTokensPreSaleWallet = 0xb10c7598b9dfab99cd646ba385560912de95f590; 
+  address bountyTokensMainSaleWallet = 0x26450331453f4fe67e3557b54336062f133c716c;
+  address foundersTokensMainSaleWallet = 0x8d6dc4df99e18f07f1be6833a59c0cd48c5c1329; 
+  uint bountyTokensPreSaleCount = 110;
+  uint foundersTokensPreSalePercent = 25; 
+  uint bountyTokensMainSaleCount = 125;
+  uint foundersTokensMainSalePercent = 15; 
+  uint preSaleStart = 1504083600;
+  uint mainSaleStart = 1504602000;
   uint period = 1;
   uint periodLast = period*2;
 
   function Configurator() {
-    MintableToken token = new TestToken();
+    MintableToken token = new XRRTestToken();
 
     CommonSale preSale = new CommonSale(token);
     preSale.addMilestone(period, 100);
     preSale.addMilestone(period, 50);
     preSale.addMilestone(periodLast, 40);
+    preSale.setMultisigWallet(multisigWalletPreSale);
     preSale.setBountyTokensWallet(bountyTokensPreSaleWallet);
     preSale.setFoundersTokensWallet(foundersTokensPreSaleWallet);
     preSale.setBountyTokensCount(bountyTokensPreSaleCount);
@@ -527,6 +529,7 @@ contract Configurator {
     preSale.setStart(preSaleStart);
 
     CommonSale mainSale = new CommonSale(token);
+    mainSale.setMultisigWallet(multisigWalletMainSale);
     mainSale.setBountyTokensWallet(bountyTokensMainSaleWallet);
     mainSale.setFoundersTokensWallet(foundersTokensMainSaleWallet);
     mainSale.setBountyTokensCount(bountyTokensMainSaleCount);

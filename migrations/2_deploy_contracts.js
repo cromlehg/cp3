@@ -1,5 +1,5 @@
-var MetaCoin = artifacts.require("./Crowdsale.sol");
+var TestConfigurator = artifacts.require("./TestConfigurator.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(Crowdsale);
+  deployer.deploy(TestConfigurator);
 };
