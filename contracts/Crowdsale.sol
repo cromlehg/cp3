@@ -509,7 +509,7 @@ contract TestConfigurator is Ownable {
   uint public foundersTokensPreSalePercent = 25; 
   uint public bountyTokensMainSaleCount = 125;
   uint public foundersTokensMainSalePercent = 15; 
-  uint public preSaleStart = 1504083600;
+  uint public preSaleStart = 1504170000;
   uint public mainSaleStart = 1504602000;
   uint public period = 1;
   uint public periodLast = period*2;
