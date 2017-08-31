@@ -393,10 +393,10 @@ contract StagedCrowdsale is Pausable {
   function currentMilestone() saleIsOn constant returns(uint) {
     uint previousDate = start;
     for(uint i=0; i < milestones.length; i++) {
-      if(now >= previousDate && now < previousDate + milestones[i].period) {
+      if(now >= previousDate && now < previousDate + milestones[i].period * 1 days) {
         return i;
       }
-      previousDate = previousDate.add(milestones[i].period);
+      previousDate = previousDate.add(milestones[i].period * 1 days);
     }
     revert();
   }
@@ -421,7 +421,7 @@ contract CommonSale is StagedCrowdsale {
   uint public percentRate = 100;
 
   bool public bountyMinted = false;
-
+  
   CommonSale public nextSale;
   
   MintableToken public token;
@@ -469,7 +469,7 @@ contract CommonSale is StagedCrowdsale {
     multisigWallet.transfer(msg.value);
     invested = invested.add(msg.value);
     uint tokens = msg.value.div(price).mul(1 ether);
-    uint bonusTokens = msg.value.div(percentRate).mul(milestone.bonus);
+    uint bonusTokens = tokens.div(percentRate).mul(milestone.bonus);
     uint tokensWithBonus = tokens.add(bonusTokens);
     token.mint(msg.sender, tokensWithBonus);
     uint foundersTokens = tokens.div(percentRate).mul(foundersPercent);
@@ -494,7 +494,50 @@ contract CommonSale is StagedCrowdsale {
     createTokens();
   }
 
+  function retrieveTokens(address anotherToken) public onlyOwner {
+    ERC20 alienToken = ERC20(anotherToken);
+    alienToken.transfer(multisigWallet, token.balanceOf(this));
+  }
+
 }
+/*
+contract TestPreSale is CommonSale {
+    
+  function deploy() onlyOwner {
+    MintableToken token = new XRRTestToken();
+    address multisigWalletPreSale = 0x11a8121AfBBd83a88CF97a84A86Da6E6Fb640b9d;
+    address foundersTokensPreSaleWallet = 0xB10c7598b9DfaB99cD646BA385560912dE95F590; 
+    address bountyTokensPreSaleWallet = 0x89E42DeDcDFE4E86222ec9C64A38F13e899Ba8Ce;
+    uint preSalePrice = 1000000000000;
+    uint preSaleHardCap = 9000000000000000000;
+    uint preSaleStart = 1504170000;
+    uint bountyTokensPreSaleCount = 110;
+    uint foundersTokensPreSalePercent = 25; 
+    uint period = 1;
+    uint periodLast = period*2;
+
+    addMilestone(period, 100);
+    addMilestone(period, 50);
+    addMilestone(periodLast, 40);
+    setMultisigWallet(multisigWalletPreSale);
+    setBountyTokensWallet(bountyTokensPreSaleWallet);
+    setFoundersTokensWallet(foundersTokensPreSaleWallet);
+    setBountyTokensCount(bountyTokensPreSaleCount);
+    setFoundersPercent(foundersTokensPreSalePercent);
+    setStart(preSaleStart);
+    setPrice(preSalePrice);
+    setHardcap(preSaleHardCap);
+    
+    token.setSaleAgent(this);  
+    setToken(token);
+  }
+    
+}
+
+
+*/
+
+
 
 contract TestConfigurator is Ownable {
 
