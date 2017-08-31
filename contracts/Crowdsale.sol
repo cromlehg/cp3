@@ -515,6 +515,8 @@ contract TestConfigurator is Ownable {
   uint public periodLast = period*2;
   uint public preSalePrice = 1000000000000;
   uint public mainSalePrice = 2000000000000;
+  uint public preSaleHardCap = 9000000000000000000;
+  uint public mainSaleHardCap = 10000000000000000000;
 
   MintableToken public token;
 
@@ -544,6 +546,7 @@ contract TestConfigurator is Ownable {
     preSale.setFoundersPercent(foundersTokensPreSalePercent);
     preSale.setStart(preSaleStart);
     preSale.setPrice(preSalePrice);
+    preSale.setHardcap(preSaleHardCap);
 
     mainSale.setMultisigWallet(multisigWalletMainSale);
     mainSale.setBountyTokensWallet(bountyTokensMainSaleWallet);
@@ -555,6 +558,7 @@ contract TestConfigurator is Ownable {
     mainSale.addMilestone(periodLast, 0);
     mainSale.setStart(mainSaleStart);
     mainSale.setPrice(mainSalePrice);
+    mainSale.setHardcap(mainSaleHardCap);
 
     preSale.setNextSale(mainSale);
 
