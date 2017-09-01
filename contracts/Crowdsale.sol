@@ -478,7 +478,7 @@ contract CommonSale is StagedCrowdsale {
 
   function mintBounty() public whenNotPaused onlyOwner {
     require(!bountyMinted);
-    token.mint(bountyTokensWallet, bountyTokensCount);
+    token.mint(bountyTokensWallet, bountyTokensCount * 1 ether);
     bountyMinted = true;
   }
 

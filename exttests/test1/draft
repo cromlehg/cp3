@@ -13,17 +13,17 @@
 
 - Кошелек создателя контракта конфигурации: 0x25803D4325EbC33CCF779FF16a23d6CF9543e559
 
-- Кошелек нового владельца контракта токена: 
+- Кошелек нового владельца контракта токена: 0xA6F5138CD040Ba04ec03c2763871402aE6cd6B45
 
-- Кошелек нового владельца контракта Presale:
-- Кошелек для собраного эфира во время PreSlae:
-- Кошелек для токенов основателям во время PreSale:
-- Кошелек для токенов баунти во время PreSale:
+- Кошелек нового владельца контракта Presale: 0xA6F5138CD040Ba04ec03c2763871402aE6cd6B45
+- Кошелек для собраного эфира во время PreSlae: 0x11a8121AfBBd83a88CF97a84A86Da6E6Fb640b9d
+- Кошелек для токенов основателям во время PreSale: 0xB10c7598b9DfaB99cD646BA385560912dE95F590
+- Кошелек для токенов баунти во время PreSale: 0x89E42DeDcDFE4E86222ec9C64A38F13e899Ba8Ce
 
-- Кошелек нового владельца контракта Mainsale:
-- Кошелек для собраного эфира во время MainSlae:
-- Кошелек для токенов основателям во время MainSale:
-- Кошелек для токенов баунти во время MainSale:
+- Кошелек нового владельца контракта Mainsale: 0xA6F5138CD040Ba04ec03c2763871402aE6cd6B45
+- Кошелек для собраного эфира во время MainSale: 0x2213Ced2655c3454438162c81933865ed6289696
+- Кошелек для токенов основателям во время MainSale: 0x8D6dC4Df99e18f07F1be6833a59c0Cd48C5c1329
+- Кошелек для токенов баунти во время MainSale: 0x26450331453f4fE67E3557b54336062f133c716C
 
 
 - Тестовые инвесторы:
@@ -60,12 +60,12 @@
 -- 3. 2 дня,  бонус  -  0%
 
 ==== Результаты тестирования ====
-Контракт токена 0xb77c793a8feea6fd2872d7398a683cae888080e0
-	Ссылка  - https://ropsten.etherscan.io/token/0xb77c793a8feea6fd2872d7398a683cae888080e0#readContract
-Контракт preSale 0x85881640146ac1c17d41805340ec30667741da9c
-	Ссылка  - https://ropsten.etherscan.io/address/0x85881640146ac1c17d41805340ec30667741da9c#readContract
-Контракт main sale 0x535217ac0d5e889d85cf236db46738aef5dcfbf9
-	Ссылка  - https://ropsten.etherscan.io/address/0x535217ac0d5e889d85cf236db46738aef5dcfbf9#readContract 
+Контракт токена 0x3E95e97C056649dA820e88ebf6EE922Ae2cEA99b
+	Ссылка  - https://ropsten.etherscan.io/token/0x3e95e97c056649da820e88ebf6ee922ae2cea99b#readContract
+Контракт preSale 0x3a1f7e8fB47Bf5c78031776705F61121A2eC9D4a
+	Ссылка  - https://ropsten.etherscan.io/address/0x3a1f7e8fb47bf5c78031776705f61121a2ec9d4a#readContract
+Контракт main sale 0xB00254C2F144263Fb8cc75991590cd76E7a739B1
+	Ссылка  - https://ropsten.etherscan.io/address/0xb00254c2f144263fb8cc75991590cd76e7a739b1#readContract
 
 
 
