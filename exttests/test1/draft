@@ -60,9 +60,12 @@
 -- 3. 2 дня,  бонус  -  0%
 
 ==== Результаты тестирования ====
-Контракт токена
-Контракт preSale
-Контракт main sale 
+Контракт токена 0xb77c793a8feea6fd2872d7398a683cae888080e0
+	Ссылка  - https://ropsten.etherscan.io/token/0xb77c793a8feea6fd2872d7398a683cae888080e0#readContract
+Контракт preSale 0x85881640146ac1c17d41805340ec30667741da9c
+	Ссылка  - https://ropsten.etherscan.io/address/0x85881640146ac1c17d41805340ec30667741da9c#readContract
+Контракт main sale 0x535217ac0d5e889d85cf236db46738aef5dcfbf9
+	Ссылка  - https://ropsten.etherscan.io/address/0x535217ac0d5e889d85cf236db46738aef5dcfbf9#readContract 
 
 
 
