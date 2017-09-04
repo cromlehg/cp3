@@ -64,6 +64,7 @@ contract('CommonSale', function(wallets) {
     this.token = await Token.new()
     this.crowdsale = await CommonSale.new()
     await this.crowdsale.setToken(this.token.address)
+    await this.token.setSaleAgent(this.crowdsale.address)
   })	 
 
 
@@ -191,10 +192,10 @@ contract('CommonSale', function(wallets) {
 
     it('should accept payments after start', async function () {
       await increaseTimeTo(start.add(10))
-      console.log(await this.crowdsale.currentMilestone())
+/*      console.log(await this.crowdsale.currentMilestone())
       console.log(await this.crowdsale.start())
       console.log(await this.crowdsale.hardCap())
-      console.log(await this.crowdsale.lastSaleDate())
+      console.log(await this.crowdsale.lastSaleDate())*/
       await this.crowdsale.send(value).should.be.fulfilled
     })
 
