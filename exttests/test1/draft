@@ -46,7 +46,7 @@
 - Стадии
 -- 1. 1 день, бонус - 100%
 -- 2. 1 день, бонус -  50%
--- 3. 2 дня,  бонус  - 40%
+-- 3. 3 дня,  бонус  - 40%
 
 3) Кнфигурация MainSale
 - Начало - 5 сентября 9 am
@@ -60,12 +60,12 @@
 -- 3. 2 дня,  бонус  -  0%
 
 ==== Результаты тестирования ====
-Контракт токена 0x3E95e97C056649dA820e88ebf6EE922Ae2cEA99b
-	Ссылка  - https://ropsten.etherscan.io/token/0x3e95e97c056649da820e88ebf6ee922ae2cea99b#readContract
-Контракт preSale 0x3a1f7e8fB47Bf5c78031776705F61121A2eC9D4a
-	Ссылка  - https://ropsten.etherscan.io/address/0x3a1f7e8fb47bf5c78031776705f61121a2ec9d4a#readContract
-Контракт main sale 0xB00254C2F144263Fb8cc75991590cd76E7a739B1
-	Ссылка  - https://ropsten.etherscan.io/address/0xb00254c2f144263fb8cc75991590cd76e7a739b1#readContract
+Контракт токена 0xB0aC75eFe7ed69a330909898Af3b61f1504fc2c4
+	Ссылка  - https://ropsten.etherscan.io/token/0xb0ac75efe7ed69a330909898af3b61f1504fc2c4#readContract
+Контракт preSale 0xBb306DED3971B3038226dcB31ccf1d8D7FC537A0
+	Ссылка  - https://ropsten.etherscan.io/address/0xbb306ded3971b3038226dcb31ccf1d8d7fc537a0#readContract
+Контракт main sale 0x24C8e642F2B4a159A625E356E85527A1B36F8713
+	Ссылка  - https://ropsten.etherscan.io/address/0x24c8e642f2b4a159a625e356e85527a1b36f8713#readContract
 
 
 

@@ -201,7 +201,8 @@ contract MintableToken is StandardToken, Ownable {
 
   address public saleAgent;
 
-  function setSaleAgent(address newSaleAgnet) onlyOwner {
+  function setSaleAgent(address newSaleAgnet) {
+    require(msg.sender == saleAgent || msg.sender == owner);
     saleAgent = newSaleAgnet;
   }
 
@@ -223,8 +224,8 @@ contract MintableToken is StandardToken, Ownable {
    * @dev Function to stop minting new tokens.
    * @return True if the operation was successful.
    */
-  function finishMinting() onlyOwner returns (bool) {
-    require(!finishMinting);
+  function finishMinting() returns (bool) {
+    require(msg.sender == saleAgent || msg.sender == owner && !finishMinting);
     finishMinting = true;
     MintFinished();
     return true;
@@ -581,7 +582,7 @@ contract TestConfigurator is Ownable {
       
     preSale.addMilestone(period, 100);
     preSale.addMilestone(period, 50);
-    preSale.addMilestone(periodLast, 40);
+    preSale.addMilestone(periodLast + 1, 40);
     preSale.setMultisigWallet(multisigWalletPreSale);
     preSale.setBountyTokensWallet(bountyTokensPreSaleWallet);
     preSale.setFoundersTokensWallet(foundersTokensPreSaleWallet);
@@ -615,8 +616,3 @@ contract TestConfigurator is Ownable {
 
 
 }
-
-
-
-
-
