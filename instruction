@@ -51,7 +51,7 @@
 3) Выбираем вкладку "Contract code"
 4) Нажимаем на ссылку "Verify And Publish"
 5) В поле "Contract name" вписываем имя контракта
-6) В поле "Complier" выбираем "v0.4.16+commit.d7661dd9"
+6) В поле "Complier" выбираем "v0.4.16+commit.d7661dd9" (на момент написания инструкции это последняя весрия)
 7) В поле "Optimization" выбираем "disabled"
 8) В поле "Enter the Solidity Contract Code below" копируем исходный весь исходный код
 9) Жмем внизу на кнопку "Verify And Publish"
