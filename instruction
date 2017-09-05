@@ -2,9 +2,9 @@
 
 Работа с контрактами
 *** Подготовка ***
-1) Залить контракт токена
-2) Залить контракт pre sale
-3) Залить контракт main sale
+1) Залить контракт токена (*Token)
+2) Залить контракт pre sale (CommonSale)
+3) Залить контракт main sale (CommonSale)
 4) Установить контракту токена контракт pre sale в качестве sale agent
    token.setSaleAgent(адрес pre sale контракта)
 6) Установить контракту pre sale следующий контракт распродажи - main sale
@@ -44,3 +44,14 @@
 
 
 Пример конфигурации контрактов находится в исходниках в контракте TestConfigurator
+
+*** Как заливать исходники в Etherscan: ***
+1) Заходим на etherscan
+2) Ищем свой контракт по адресу
+3) Выбираем вкладку "Contract code"
+4) Нажимаем на ссылку "Verify And Publish"
+5) В поле "Contract name" вписываем имя контракта
+6) В поле "Complier" выбираем "v0.4.16+commit.d7661dd9"
+7) В поле "Optimization" выбираем "disabled"
+8) В поле "Enter the Solidity Contract Code below" копируем исходный весь исходный код
+9) Жмем внизу на кнопку "Verify And Publish"
