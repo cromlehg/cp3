@@ -1,4 +1,4 @@
-pragma solidity ^0.4.13;
+pragma solidity ^0.4.16;
 
 /**
  * @title ERC20Basic
@@ -213,7 +213,7 @@ contract MintableToken is StandardToken, Ownable {
    * @return A boolean that indicates if the operation was successful.
    */
   function mint(address _to, uint256 _amount) returns (bool) {
-    require(msg.sender == saleAgent && !finishMinting);
+    require(msg.sender == saleAgent && !mintingFinished);
     totalSupply = totalSupply.add(_amount);
     balances[_to] = balances[_to].add(_amount);
     Mint(_to, _amount);
