@@ -279,11 +279,11 @@ contract Pausable is Ownable {
   
 }
 
-contract XRRTestToken is MintableToken {	
+contract XRRToken is MintableToken {	
     
-  string public constant name = "XRRT";
+  string public constant name = "XRR";
    
-  string public constant symbol = "XRRT Test token";
+  string public constant symbol = "XRR token";
     
   uint32 public constant decimals = 18;
     
